@@ -1,15 +1,18 @@
 # Win Compute Info
 
-[![Stars](https://img.shields.io/github/stars/ivancarlosti/wincomputerinfo?label=⭐%20Stars&color=gold&style=flat)](https://github.com/ivancarlosti/wincomputerinfo/stargazers)
-[![Watchers](https://img.shields.io/github/watchers/ivancarlosti/wincomputerinfo?label=Watchers&style=flat&color=red)](https://github.com/sponsors/ivancarlosti)
-[![Forks](https://img.shields.io/github/forks/ivancarlosti/wincomputerinfo?label=Forks&style=flat&color=ff69b4)](https://github.com/sponsors/ivancarlosti)
-[![GitHub last commit](https://img.shields.io/github/last-commit/ivancarlosti/wincomputerinfo?label=Last%20Commit)](https://github.com/ivancarlosti/wincomputerinfo/commits)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ivancarlosti/wincomputerinfo?label=Activity)](https://github.com/ivancarlosti/wincomputerinfo/pulse)  
-[![GitHub Issues](https://img.shields.io/github/issues/ivancarlosti/wincomputerinfo?label=Issues&color=orange)](https://github.com/ivancarlosti/wincomputerinfo/issues)
-[![License](https://img.shields.io/github/license/ivancarlosti/wincomputerinfo?label=License)](LICENSE)
-[![Security](https://img.shields.io/badge/Security-View%20Here-purple)](https://github.com/ivancarlosti/wincomputerinfo/security)
-[![Code of Conduct](https://img.shields.io/badge/Code%20of%20Conduct-1.4-4baaaa)](https://github.com/ivancarlosti/wincomputerinfo/tree/main?tab=coc-ov-file)
+<!-- buttons -->
+[![Stars](https://img.shields.io/github/stars/ivancarlosti/.github?label=⭐%20Stars&color=gold&style=flat)](https://github.com/ivancarlosti/.github/stargazers)
+[![Watchers](https://img.shields.io/github/watchers/ivancarlosti/.github?label=Watchers&style=flat&color=red)](https://github.com/sponsors/ivancarlosti)
+[![Forks](https://img.shields.io/github/forks/ivancarlosti/.github?label=Forks&style=flat&color=ff69b4)](https://github.com/sponsors/ivancarlosti)
+[![GitHub last commit](https://img.shields.io/github/last-commit/ivancarlosti/.github?label=Last%20Commit)](https://github.com/ivancarlosti/.github/commits)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ivancarlosti/.github?label=Activity)](https://github.com/ivancarlosti/.github/pulse)  
+[![GitHub Issues](https://img.shields.io/github/issues/ivancarlosti/.github?label=Issues&color=orange)](https://github.com/ivancarlosti/.github/issues)
+[![License](https://img.shields.io/github/license/ivancarlosti/.github?label=License)](LICENSE)
+[![Security](https://img.shields.io/badge/Security-View%20Here-purple)](https://github.com/ivancarlosti/.github/security)
+[![Code of Conduct](https://img.shields.io/badge/Code%20of%20Conduct-2.1-4baaaa)](https://github.com/ivancarlosti/.github?tab=coc-ov-file)
+<!-- endbuttons -->
 
+<!-- footer -->
 ---
 
 ## 🧑‍💻 Consulting and technical support
