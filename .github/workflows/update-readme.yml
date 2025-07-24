@@ -70,8 +70,11 @@ jobs:
         run: |
           cp source_files/LICENSE LICENSE
 
-      - name: Remove source_files from git index
-        run: git rm --cached -r source_files || true
+      - name: Show git status before commit
+        run: git status
+
+      - name: Stage updated files
+        run: git add README.md LICENSE
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
