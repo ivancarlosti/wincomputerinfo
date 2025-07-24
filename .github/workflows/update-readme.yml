@@ -1,5 +1,6 @@
-name: Update README and LICENSE
+name: Update README
 
+# Allow GitHub Actions to commit and push changes
 permissions:
   contents: write
 
@@ -9,8 +10,12 @@ on:
     - cron: '0 4 * * *'  # Every day at 4 AM UTC
 
 jobs:
-  update-readme-license:
+  update-readme:
     runs-on: ubuntu-latest
+
+    env:
+      SOURCE_REPO: ivancarlosti/.github
+      SOURCE_BRANCH: main
 
     steps:
       - name: Checkout current repository
@@ -19,8 +24,8 @@ jobs:
       - name: Checkout source README template
         uses: actions/checkout@v4
         with:
-          repository: ivancarlosti/.github
-          ref: main
+          repository: ${{ env.SOURCE_REPO }}
+          ref: ${{ env.SOURCE_BRANCH }}
           path: source_readme
 
       - name: Update README.md (buttons and footer)
@@ -28,11 +33,14 @@ jobs:
           set -e
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
 
+          # --- Extract buttons block from source ---
           BUTTONS=$(awk '/<!-- buttons -->/{flag=1;next}/<!-- endbuttons -->/{flag=0}flag' source_readme/README.md)
           BUTTONS_UPDATED=$(echo "$BUTTONS" | sed "s/\.github/${REPO_NAME}/g")
 
+          # --- Extract footer block from source (everything from <!-- footer --> onward) ---
           FOOTER=$(awk '/<!-- footer -->/{flag=1}flag' source_readme/README.md)
 
+          # --- Replace buttons section in README.md ---
           UPDATED=$(awk -v buttons="$BUTTONS_UPDATED" '
             BEGIN { skip=0 }
             /<!-- buttons -->/ {
@@ -49,6 +57,7 @@ jobs:
             !skip { print }
           ' README.md)
 
+          # --- Replace everything after <!-- footer --> with FOOTER ---
           echo "$UPDATED" | awk -v footer="$FOOTER" '
             /<!-- footer -->/ {
               print footer
@@ -58,18 +67,12 @@ jobs:
             { print }
           ' > README.tmp && mv README.tmp README.md
 
-      - name: Download LICENSE directly from raw URL
-        run: |
-          curl -sSL https://raw.githubusercontent.com/ivancarlosti/.github/main/LICENSE -o LICENSE
-
-      - name: Stage updated files
-        run: git add README.md LICENSE
+      - name: Remove source_readme from git index
+        run: git rm --cached -r source_readme || true
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          file_pattern: |
-            README.md
-            LICENSE
-          commit_message: "Sync README and LICENSE from template [▶️]"
+          file_pattern: README.md
+          commit_message: "Sync README from template [▶️]"
           branch: ${{ github.ref_name }}
