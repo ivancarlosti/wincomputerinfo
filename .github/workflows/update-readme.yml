@@ -1,6 +1,5 @@
 name: Update README and LICENSE
 
-# Allow GitHub Actions to commit and push changes
 permissions:
   contents: write
 
@@ -13,34 +12,27 @@ jobs:
   update-readme-license:
     runs-on: ubuntu-latest
 
-    env:
-      SOURCE_REPO: ivancarlosti/.github
-      SOURCE_BRANCH: main
-
     steps:
       - name: Checkout current repository
         uses: actions/checkout@v4
 
-      - name: Checkout source files from .github
+      - name: Checkout source README template
         uses: actions/checkout@v4
         with:
-          repository: ${{ env.SOURCE_REPO }}
-          ref: ${{ env.SOURCE_BRANCH }}
-          path: source_files
+          repository: ivancarlosti/.github
+          ref: main
+          path: source_readme
 
       - name: Update README.md (buttons and footer)
         run: |
           set -e
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
 
-          # --- Extract buttons block from source ---
-          BUTTONS=$(awk '/<!-- buttons -->/{flag=1;next}/<!-- endbuttons -->/{flag=0}flag' source_files/README.md)
+          BUTTONS=$(awk '/<!-- buttons -->/{flag=1;next}/<!-- endbuttons -->/{flag=0}flag' source_readme/README.md)
           BUTTONS_UPDATED=$(echo "$BUTTONS" | sed "s/\.github/${REPO_NAME}/g")
 
-          # --- Extract footer block from source (everything from <!-- footer --> onward) ---
-          FOOTER=$(awk '/<!-- footer -->/{flag=1}flag' source_files/README.md)
+          FOOTER=$(awk '/<!-- footer -->/{flag=1}flag' source_readme/README.md)
 
-          # --- Replace buttons section in README.md ---
           UPDATED=$(awk -v buttons="$BUTTONS_UPDATED" '
             BEGIN { skip=0 }
             /<!-- buttons -->/ {
@@ -57,7 +49,6 @@ jobs:
             !skip { print }
           ' README.md)
 
-          # --- Replace everything after <!-- footer --> with FOOTER ---
           echo "$UPDATED" | awk -v footer="$FOOTER" '
             /<!-- footer -->/ {
               print footer
@@ -67,14 +58,12 @@ jobs:
             { print }
           ' > README.tmp && mv README.tmp README.md
 
-      - name: Overwrite LICENSE from template
-        run: cp source_files/LICENSE LICENSE
+      - name: Download LICENSE directly from raw URL
+        run: |
+          curl -sSL https://raw.githubusercontent.com/ivancarlosti/.github/main/LICENSE -o LICENSE
 
       - name: Stage updated files
         run: git add README.md LICENSE
-
-      - name: Remove source_files from git index (optional)
-        run: git rm --cached -r source_files || true
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
