@@ -1,6 +1,5 @@
 name: Update README
 
-# Allow GitHub Actions to commit and push changes
 permissions:
   contents: write
 
@@ -67,12 +66,20 @@ jobs:
             { print }
           ' > README.tmp && mv README.tmp README.md
 
+      - name: Copy LICENSE from source
+        run: |
+          if [ -f source_readme/LICENSE ]; then
+            cp source_readme/LICENSE LICENSE
+          fi
+
       - name: Remove source_readme from git index
         run: git rm --cached -r source_readme || true
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          file_pattern: README.md
-          commit_message: "Sync README from template [▶️]"
+          file_pattern: |
+            README.md
+            LICENSE
+          commit_message: "Sync README and LICENSE from template [▶️]"
           branch: ${{ github.ref_name }}
