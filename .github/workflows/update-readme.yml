@@ -20,7 +20,7 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v4
 
-      - name: Checkout source README template
+      - name: Checkout source README template and LICENSE
         uses: actions/checkout@v4
         with:
           repository: ${{ env.SOURCE_REPO }}
@@ -66,10 +66,11 @@ jobs:
             { print }
           ' > README.tmp && mv README.tmp README.md
 
-      - name: Copy LICENSE from source
+      - name: Overwrite LICENSE from source
         run: |
           if [ -f source_readme/LICENSE ]; then
-            cp source_readme/LICENSE LICENSE
+            cp -f source_readme/LICENSE LICENSE
+            git add LICENSE
           fi
 
       - name: Remove source_readme from git index
