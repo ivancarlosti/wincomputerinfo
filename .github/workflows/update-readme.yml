@@ -1,4 +1,4 @@
-name: Update README
+name: Update README and LICENSE
 
 permissions:
   contents: write
@@ -9,7 +9,7 @@ on:
     - cron: '0 4 * * *'  # Every day at 4 AM UTC
 
 jobs:
-  update-readme:
+  update-readme-license:
     runs-on: ubuntu-latest
 
     env:
@@ -20,12 +20,12 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v4
 
-      - name: Checkout source README template and LICENSE
+      - name: Checkout source files from .github
         uses: actions/checkout@v4
         with:
           repository: ${{ env.SOURCE_REPO }}
           ref: ${{ env.SOURCE_BRANCH }}
-          path: source_readme
+          path: source_files
 
       - name: Update README.md (buttons and footer)
         run: |
@@ -33,11 +33,11 @@ jobs:
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
 
           # --- Extract buttons block from source ---
-          BUTTONS=$(awk '/<!-- buttons -->/{flag=1;next}/<!-- endbuttons -->/{flag=0}flag' source_readme/README.md)
+          BUTTONS=$(awk '/<!-- buttons -->/{flag=1;next}/<!-- endbuttons -->/{flag=0}flag' source_files/README.md)
           BUTTONS_UPDATED=$(echo "$BUTTONS" | sed "s/\.github/${REPO_NAME}/g")
 
           # --- Extract footer block from source (everything from <!-- footer --> onward) ---
-          FOOTER=$(awk '/<!-- footer -->/{flag=1}flag' source_readme/README.md)
+          FOOTER=$(awk '/<!-- footer -->/{flag=1}flag' source_files/README.md)
 
           # --- Replace buttons section in README.md ---
           UPDATED=$(awk -v buttons="$BUTTONS_UPDATED" '
@@ -66,15 +66,12 @@ jobs:
             { print }
           ' > README.tmp && mv README.tmp README.md
 
-      - name: Overwrite LICENSE from source
+      - name: Overwrite LICENSE from template
         run: |
-          if [ -f source_readme/LICENSE ]; then
-            cp -f source_readme/LICENSE LICENSE
-            git add LICENSE
-          fi
+          cp source_files/LICENSE LICENSE
 
-      - name: Remove source_readme from git index
-        run: git rm --cached -r source_readme || true
+      - name: Remove source_files from git index
+        run: git rm --cached -r source_files || true
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
