@@ -1,0 +1,18 @@
+@echo off
+chcp 65001
+cls
+
+echo ### Please wait, collecting system information... ###
+echo.
+
+:: General system information
+PowerShell -NoProfile -Command "$cs = Get-CimInstance Win32_ComputerSystem; $os = Get-CimInstance Win32_OperatingSystem; $version = $os.Version; $build = $os.BuildNumber; $ver = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -ErrorAction SilentlyContinue).DisplayVersion; if (-not $ver) { $map = @{ '19041'='2004'; '19042'='20H2'; '19043'='21H1'; '19044'='21H2'; '19045'='22H2'; '22000'='21H2'; '22621'='22H2'; '22631'='23H2'; '26100'='24H2' }; $ver = $map[$build]; if (-not $ver) { $ver = 'Unknown' } }; $bios = Get-WmiObject -Class Win32_BIOS | Select-Object -ExpandProperty SerialNumber; $ram = [Math]::Round((Get-WmiObject -Class Win32_ComputerSystem).TotalPhysicalMemory / 1GB); $cpu = Get-WmiObject -Class Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors; $disk = Get-PhysicalDisk | Select-Object FriendlyName, MediaType; $logicalDisks = Get-WmiObject Win32_LogicalDisk -Filter 'DriveType=3'; $gpu = Get-WmiObject Win32_VideoController | Select-Object -ExpandProperty Name; $user = $env:USERNAME; $ip = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -notlike '169.*' -and $_.IPAddress -ne '127.0.0.1' }).IPAddress; Write-Host '=== SYSTEM INFORMATION ============================================================'; Write-Host ('{0,-25} {1}' -f 'Host Name:', $cs.Name); Write-Host ('{0,-25} {1}' -f 'OS Name:', $os.Caption); Write-Host ('{0,-25} {1}' -f 'Windows Version:', $ver + ' (Build ' + $build + ')'); Write-Host ('{0,-25} {1}' -f 'Manufacturer / Model:', $cs.Manufacturer+' / '+$cs.Model); Write-Host ('{0,-25} {1}' -f 'Logged Username:', $user); Write-Host ('{0,-25} {1}' -f 'BIOS Serial Number:', $bios); Write-Host ('{0,-25} {1} GB' -f 'Installed RAM:', $ram); foreach ($item in $cpu) { Write-Host ('{0,-25} {1}' -f 'CPU Name:', $item.Name); Write-Host ('{0,-25} {1}' -f 'CPU Core / vCore:', $item.NumberOfCores+' Cores / '+$item.NumberOfLogicalProcessors+' Virtual Cores'); }; foreach ($g in $gpu) { Write-Host ('{0,-25} {1}' -f 'GPU:', $g); }; Write-Host ('{0,-25} {1}' -f 'IP Address:', ($ip -join ', ')); $i = 0; foreach ($d in $disk) { $i++; Write-Host ('{0,-25} {1}' -f ('Disk ' + $i + ' Name / Type:'), $d.FriendlyName+' / '+$d.MediaType); }; Write-Host ''; Write-Host '=== DISK USAGE ===================================================================='; foreach ($ld in $logicalDisks) { $total = [math]::Round($ld.Size / 1GB, 2); $free = [math]::Round($ld.FreeSpace / 1GB, 2); $used = $total - $free; $percentUsed = if ($total -ne 0) { [math]::Round(($used / $total) * 100, 2) } else { 0 }; Write-Host ('Drive {0} - Total: {1} GB, Used: {2} GB ({3}%%)' -f $ld.DeviceID, $total, $used, $percentUsed); }"
+
+echo.
+
+:: Antivirus detection with translated productState
+echo === ANTIVIRUS SOFTWARE ============================================================
+PowerShell -NoProfile -Command "Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct | ForEach-Object { $state = $_.productState; $status = switch ($state) { 397568 {'Enabled'}; 393472 {'Disabled'}; 262144 {'Enabled'}; 262160 {'Enabled'}; 266240 {'Enabled'}; 266256 {'Enabled'}; 393216 {'Disabled'}; 397312 {'Disabled'}; default {'Unknown State (' + $state + ')'} }; Write-Host ('{0,-25} {1} / {2}' -f 'Name / State:', $_.displayName, $status); Write-Host ('{0,-25} {1}' -f 'Path:', $_.pathToSignedProductExe); Write-Host '' }"
+
+echo ### Data collection completed. Please print or save the above ###
+set /p dummyVar=
