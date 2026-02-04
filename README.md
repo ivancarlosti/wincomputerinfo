@@ -2,6 +2,12 @@
 
 Script to show computer info on Windows OS
 
+<!-- buttons -->
+
+<!-- endbuttons -->
+
+Script to get computer info
+
 <!-- footer -->
 ---
 
