@@ -14,5 +14,10 @@ echo.
 echo === ANTIVIRUS SOFTWARE ============================================================
 PowerShell -NoProfile -Command "Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct | ForEach-Object { $state = $_.productState; $status = switch ($state) { 397568 {'Enabled'}; 393472 {'Disabled'}; 262144 {'Enabled'}; 262160 {'Enabled'}; 266240 {'Enabled'}; 266256 {'Enabled'}; 393216 {'Disabled'}; 397312 {'Disabled'}; default {'Unknown State (' + $state + ')'} }; Write-Host ('{0,-25} {1} / {2}' -f 'Name / State:', $_.displayName, $status); Write-Host ('{0,-25} {1}' -f 'Path:', $_.pathToSignedProductExe); Write-Host '' }"
 
+:: Secure Boot state (readable without administrator elevation)
+echo === SECURE BOOT ===================================================================
+PowerShell -NoProfile -Command "$sb = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecureBoot\State' -Name UEFISecureBootEnabled -ErrorAction SilentlyContinue).UEFISecureBootEnabled; if ($sb -eq 1) { $state = 'Enabled' } elseif ($sb -eq 0) { $state = 'Disabled' } else { $state = 'Not supported (legacy BIOS) / unknown' }; Write-Host ('{0,-25} {1}' -f 'Secure Boot:', $state)"
+PowerShell -NoProfile -Command "$elevated = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator); if ($elevated) { $mode = try { $m = (Get-SecureBootUEFI -Name SetupMode -ErrorAction Stop).Bytes; if ($m[0] -eq 1) { 'Setup mode (no Platform Key)' } else { 'User mode (Platform Key provisioned)' } } catch { 'Unavailable' } } else { $mode = 'Requires administrator' }; Write-Host ('{0,-25} {1}' -f 'Secure Boot Mode:', $mode)"
+
 echo ### Data collection completed. Please print or save the above ###
 set /p dummyVar=
